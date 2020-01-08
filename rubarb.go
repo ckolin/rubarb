@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	in, out, xOffset, yOffset, separation := parseArgs()
+	in, out, xOffset, yOffset, separation, lineWidth := parseArgs()
 
 	img, err := gg.LoadPNG(in)
 	if err != nil {
@@ -16,6 +16,7 @@ func main() {
 	bounds := img.Bounds()
 	dc := gg.NewContext(bounds.Dx()*separation+2*Abs(xOffset), bounds.Dy()*separation+2*Abs(yOffset))
 	dc.SetRGB(1, 1, 1)
+	dc.SetLineWidth(float64(lineWidth))
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		dc.ClearPath()
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
@@ -36,14 +37,15 @@ func main() {
 	dc.SavePNG(out)
 }
 
-func parseArgs() (string, string, int, int, int) {
+func parseArgs() (string, string, int, int, int, int) {
 	inPtr := flag.String("i", "in.png", "input file")
 	outPtr := flag.String("o", "out.png", "output file")
 	xOffsetPtr := flag.Int("x", 0, "x offset")
 	yOffsetPtr := flag.Int("y", -20, "y offset")
 	separationPtr := flag.Int("s", 4, "line separation")
+	lineWidthPtr := flag.Int("l", 1, "line width")
 	flag.Parse()
-	return *inPtr, *outPtr, *xOffsetPtr, *yOffsetPtr, *separationPtr
+	return *inPtr, *outPtr, *xOffsetPtr, *yOffsetPtr, *separationPtr, *lineWidthPtr
 }
 
 func Abs(x int) int {
