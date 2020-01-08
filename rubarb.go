@@ -15,10 +15,8 @@ func main() {
 	}
 	bounds := img.Bounds()
 	dc := gg.NewContext(bounds.Dx()*separation+2*Abs(xOffset), bounds.Dy()*separation+2*Abs(yOffset))
-	dc.SetRGB(1, 1, 1)
 	dc.SetLineWidth(float64(lineWidth))
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-		dc.ClearPath()
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			r, g, b, a := img.At(x, y).RGBA()
 			val := (0.299*float64(r) + 0.587*float64(g) + 0.114*float64(b)) / 65535.0
@@ -26,12 +24,17 @@ func main() {
 
 			ox, oy := float64(xOffset)*val, float64(yOffset)*val
 			px, py := float64(x*separation+Abs(xOffset))+ox, float64(y*separation+Abs(yOffset))+oy
+
 			if x == bounds.Min.X {
 				dc.MoveTo(px, py)
+			} else {
+				dc.SetColor(img.At(x, y))
+				dc.LineTo(px, py)
+				dc.Stroke()
+				dc.ClearPath()
+				dc.MoveTo(px, py)
 			}
-			dc.LineTo(px, py)
 		}
-		dc.Stroke()
 	}
 
 	dc.SavePNG(out)
